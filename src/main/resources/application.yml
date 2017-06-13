@@ -1,0 +1,38 @@
+#
+# Copyright (C) 2013 - 2016 SkyTouch Solutions, LLC. All rights reserved.
+#
+
+spring:
+  main:
+    show_banner: true
+    web_environment: true  
+  application:
+    name: oauth2-demo
+   
+oauth2-demo:
+  greetings: Greetings from the HotelOS API Service Gateway!
+  
+server:
+  port: 8081
+
+#Logging
+logging:
+  level:
+    ROOT: ERROR
+    com.skytouch: INFO
+
+
+security:
+  oauth2:
+    client:
+      clientId: qmoj8aG3JXqy_zfMic8r0_sfCCYa
+      clientSecret: ipX3fFPi2h47TlaEB5D6d_1eJYAa
+      accessTokenUri: https://localhost:9443/oauth2/token
+      userAuthorizationUri: https://localhost:9443/oauth2/authorize
+      tokenName: oauth_token
+      authenticationScheme: query
+      clientAuthenticationScheme: form
+    resource:
+      userInfoUri: http://localhost:8081/greetings
+      
+      
