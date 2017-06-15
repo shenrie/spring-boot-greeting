@@ -9,6 +9,9 @@ spring:
 oauth2-demo:
   greetings: Greetings from the HotelOS API Service Gateway!
   
+greeting:
+  host: http://127.0.0.1
+  
 server:
   port: 8081
 
@@ -18,7 +21,6 @@ logging:
     ROOT: ERROR
     com.skytouch: INFO
 
-
 security:
   user:
     name: test
@@ -27,9 +29,10 @@ security:
     client:
       clientId: apiman
       clientSecret:
-      userAuthorizationUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/auth
-      accessTokenUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/token
+      userAuthorizationUri: http://127.0.0.1:8080/auth/realms/demo/protocol/openid-connect/auth
+      accessTokenUri: http://127.0.0.1:8080/auth/realms/demo/protocol/openid-connect/token
     resource:
       user-info-uri: http://127.0.0.1:8080/auth/realms/demo/protocol/openid-connect/userinfo
-      
+
+
       

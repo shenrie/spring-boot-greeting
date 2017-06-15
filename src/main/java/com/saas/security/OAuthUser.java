@@ -5,17 +5,17 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.Map;
-/*
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-*/
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-
+@Component
 public class OAuthUser implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -44,13 +44,13 @@ public class OAuthUser implements Serializable {
 	
 	public void setOAuthUser(Principal principal) {
 	    this.principal = principal;
-	    //init();
+	    init();
 	}
 	
 	public Principal getPrincipal() {
 	    return principal;
 	}
-	/*
+
 	private void init() {
 	    if (principal != null) {
 	        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
@@ -91,7 +91,6 @@ public class OAuthUser implements Serializable {
 	
 	    }
 	}
-	*/
 	
 	public String getAuthority() {
 	    return authority;
