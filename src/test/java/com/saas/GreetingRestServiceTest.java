@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -129,7 +128,7 @@ public class GreetingRestServiceTest {
     public void testHelp(){
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(restServiceUri+"/help", HttpMethod.GET, request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(restServiceUri+"/greeting/help", HttpMethod.GET, request, String.class);
         
         String resp=response.getBody();
         assertTrue(resp.startsWith("Usage: http://127.0.0.1:8081"));
@@ -141,7 +140,7 @@ public class GreetingRestServiceTest {
      */
     @SuppressWarnings("unchecked")
 	@Test
-    public void testGreeting(){
+    public void testDefaultGreeting(){
     	AuthTokenInfo tokenInfo = sendTokenRequest();
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
@@ -149,15 +148,34 @@ public class GreetingRestServiceTest {
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
 
         assertNotNull(responseMap);
-        int id = (Integer)responseMap.get("id");
-        assertEquals(1,id);
+        assertTrue(responseMap.containsKey("id"));
         
         String content = (String)responseMap.get("content");
         assertEquals("Hello, World!",content);
         
     }
 
-    
+  
+    /*
+     * Send a GET request with auth
+     */
+    @SuppressWarnings("unchecked")
+	@Test
+    public void testBobGreeting(){
+    	AuthTokenInfo tokenInfo = sendTokenRequest();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
+        ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting?name=Bob", HttpMethod.GET, request, Object.class);
+        LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
+
+        assertNotNull(responseMap);
+        assertTrue(responseMap.containsKey("id"));
+        
+        String content = (String)responseMap.get("content");
+        assertEquals("Hello, Bob!",content);
+        
+    }
+
     /*
      * Send a GET request with auth
      */
@@ -167,7 +185,7 @@ public class GreetingRestServiceTest {
     	AuthTokenInfo tokenInfo = sendTokenRequest();
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
-        ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/profile", HttpMethod.GET, request, Object.class);
+        ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting/profile", HttpMethod.GET, request, Object.class);
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
 
         assertNotNull(responseMap);

@@ -5,10 +5,7 @@ spring:
     web_environment: true  
   application:
     name: oauth2-demo
-   
-oauth2-demo:
-  greetings: Greetings from the HotelOS API Service Gateway!
-  
+
 server:
   port: 8081
 
@@ -16,7 +13,7 @@ server:
 logging:
   level:
     ROOT: ERROR
-    com.skytouch: INFO
+    com.saas: INFO
 
 
 security:

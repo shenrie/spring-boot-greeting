@@ -21,7 +21,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     @Override
     public void configure(HttpSecurity http) throws Exception {
     	http
-    	.authorizeRequests().antMatchers("/help/**").permitAll()
+    	.authorizeRequests().antMatchers("/greeting/help").permitAll()
     	.anyRequest().authenticated()
     	//.antMatchers("/profile/**").access("hasRole('VIEW_PROFILE')")
     	.and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
