@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
@@ -117,7 +118,7 @@ public class GreetingRestServiceTest {
     public void testGreetingNoAuth(){
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getHeaders());
-        ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting", HttpMethod.GET, request, Object.class);
+        restTemplate.exchange(restServiceUri+"/greeting", HttpMethod.GET, request, Object.class);
         
     }
  
@@ -138,7 +139,8 @@ public class GreetingRestServiceTest {
     /*
      * Send a GET request with auth
      */
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testGreeting(){
     	AuthTokenInfo tokenInfo = sendTokenRequest();
         RestTemplate restTemplate = new RestTemplate();
@@ -156,5 +158,31 @@ public class GreetingRestServiceTest {
     }
 
     
-    
+    /*
+     * Send a GET request with auth
+     */
+    @SuppressWarnings("unchecked")
+	@Test
+    public void testProfile(){
+    	AuthTokenInfo tokenInfo = sendTokenRequest();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
+        ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/profile", HttpMethod.GET, request, Object.class);
+        LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
+
+        assertNotNull(responseMap);
+        boolean auth = (Boolean)responseMap.get("authenticated");
+        assertTrue(auth);
+        
+		Map<String, Object> user = (Map<String, Object>)responseMap.get("userDetail");
+        String uname = (String)user.get("preferred_username");
+        assertEquals("test",uname);
+
+        String name = (String)user.get("name");
+        assertEquals("Test Test",name);
+        
+        String email = (String)user.get("email");
+        assertEquals("test@demo.com",email);
+    }
+
 }
