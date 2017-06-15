@@ -27,6 +27,6 @@ security:
       userAuthorizationUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/auth
       accessTokenUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/token
     resource:
-      user-info-uri: http://127.0.0.1:8080/auth/realms/demo/protocol/openid-connect/userinfo
+      user-info-uri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/userinfo
       
       

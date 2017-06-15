@@ -35,7 +35,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class GreetingRestServiceTest {
  
-    protected int port = 8081;
+    protected int port = 8091;   //specified in test application.yaml
     
     @Value("${greeting.host}")
     private String greetingHost;
@@ -131,7 +131,7 @@ public class GreetingRestServiceTest {
         ResponseEntity<String> response = restTemplate.exchange(restServiceUri+"/greeting/help", HttpMethod.GET, request, String.class);
         
         String resp=response.getBody();
-        assertTrue(resp.startsWith("Usage: http://127.0.0.1:8081"));
+        assertTrue(resp.startsWith("Usage: http://127.0.0.1:8091"));
     }
 
      
