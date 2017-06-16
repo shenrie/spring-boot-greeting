@@ -183,6 +183,9 @@ public class GreetingRestServiceTest {
 	@Test
     public void testProfile(){
     	AuthTokenInfo tokenInfo = sendTokenRequest();
+    	
+    	System.out.println("Token Auth: " + tokenInfo);
+    	
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
         ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting/profile", HttpMethod.GET, request, Object.class);

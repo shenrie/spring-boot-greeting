@@ -23,7 +23,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     	http
     	.authorizeRequests().antMatchers("/greeting/help").permitAll()
     	.anyRequest().authenticated()
-    	//.antMatchers("/profile/**").access("hasRole('VIEW_PROFILE')")
+    	.antMatchers("/profile").access("hasRole('view-prof')")
     	.and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
  
