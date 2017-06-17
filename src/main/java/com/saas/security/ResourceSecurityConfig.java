@@ -56,7 +56,8 @@ public class ResourceSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
         http
         	.authorizeRequests()
         	.antMatchers("/greeting/help").permitAll()
-        	.antMatchers("/greeting/profile*").hasRole("PROFILE")
+        	//Spring Security REQUIRES role to be name ROLE_PROFILE in Keycloak!!!!
+        	.antMatchers("/greeting/profile*").hasRole("PROFILE")  
         	.anyRequest().authenticated()
         	.and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
 
