@@ -41,10 +41,8 @@ public class GreetingRestServiceTest {
     private String greetingHost;
        
     private String authServerUri;
-    private String passwordGrant;
       
     private String restServiceUri;
-    
 
     @Autowired
     private Environment env;
@@ -53,11 +51,7 @@ public class GreetingRestServiceTest {
     public void classSetup() {
     	
     	authServerUri = env.getProperty("security.oauth2.client.accessTokenUri");
-    	passwordGrant = String.format("grant_type=password&client_id=%s&username=%s&password=%s", 
-    			env.getProperty("security.oauth2.client.clientId"),
-    			env.getProperty("security.user.name"),
-    			env.getProperty("security.user.password"));
-    	
+   	
     	restServiceUri = greetingHost + ":" + port;
     }
 
@@ -88,9 +82,16 @@ public class GreetingRestServiceTest {
      * Send a POST request [on /oauth/token] to get an access-token, which will then be send with each request.
      */
     @SuppressWarnings({ "unchecked"})
-	private AuthTokenInfo sendTokenRequest(){
-        RestTemplate restTemplate = new RestTemplate(); 
-        
+	private AuthTokenInfo sendTokenRequest() {
+    	return sendTokenRequest(env.getProperty("security.user.name"), env.getProperty("security.user.password"));
+    }
+    	
+    private AuthTokenInfo sendTokenRequest(String username, String password){
+    	        
+    	String passwordGrant = String.format("grant_type=password&client_id=%s&username=%s&password=%s", 
+    			env.getProperty("security.oauth2.client.clientId"), username, password);
+ 
+    	RestTemplate restTemplate = new RestTemplate();   	
         HttpEntity<String> request = new HttpEntity<String>(passwordGrant, getPostHeaders());
         ResponseEntity<Object> response = restTemplate.exchange(authServerUri, HttpMethod.POST, request, Object.class);
         LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>)response.getBody();
@@ -115,7 +116,8 @@ public class GreetingRestServiceTest {
      */
     @Test(expected=HttpClientErrorException.class)
     public void testGreetingNoAuth(){
-        RestTemplate restTemplate = new RestTemplate();
+    	
+    	RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getHeaders());
         restTemplate.exchange(restServiceUri+"/greeting", HttpMethod.GET, request, Object.class);
         
@@ -126,7 +128,8 @@ public class GreetingRestServiceTest {
      */
     @Test
     public void testHelp(){
-        RestTemplate restTemplate = new RestTemplate();
+        
+    	RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getHeaders());
         ResponseEntity<String> response = restTemplate.exchange(restServiceUri+"/greeting/help", HttpMethod.GET, request, String.class);
         
@@ -142,7 +145,8 @@ public class GreetingRestServiceTest {
 	@Test
     public void testDefaultGreeting(){
     	AuthTokenInfo tokenInfo = sendTokenRequest();
-        RestTemplate restTemplate = new RestTemplate();
+    	
+    	RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
         ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting", HttpMethod.GET, request, Object.class);
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
@@ -163,7 +167,8 @@ public class GreetingRestServiceTest {
 	@Test
     public void testBobGreeting(){
     	AuthTokenInfo tokenInfo = sendTokenRequest();
-        RestTemplate restTemplate = new RestTemplate();
+    	
+    	RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
         ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting?name=Bob", HttpMethod.GET, request, Object.class);
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
@@ -184,12 +189,12 @@ public class GreetingRestServiceTest {
     public void testProfile(){
     	AuthTokenInfo tokenInfo = sendTokenRequest();
     	
-    	System.out.println("Token Auth: " + tokenInfo);
-    	
-        RestTemplate restTemplate = new RestTemplate();
+    	RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
         ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting/profile", HttpMethod.GET, request, Object.class);
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>)response.getBody();
+
+       	System.out.println("Auth details: " + responseMap);
 
         assertNotNull(responseMap);
         boolean auth = (Boolean)responseMap.get("authenticated");
@@ -204,6 +209,21 @@ public class GreetingRestServiceTest {
         
         String email = (String)user.get("email");
         assertEquals("test@demo.com",email);
+    }
+
+    
+    
+    /*
+     * Send a GET request without auth
+     */
+    @SuppressWarnings("unchecked")
+	@Test(expected=HttpClientErrorException.class)
+    public void testProfileWithoutAuthorization(){
+    	AuthTokenInfo tokenInfo = sendTokenRequest(env.getProperty("security.user.altName"), env.getProperty("security.user.password"));    	
+    	
+    	RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<String> request = new HttpEntity<String>(getBearerHeaders(tokenInfo.getAccess_token()));
+        ResponseEntity<Object> response = restTemplate.exchange(restServiceUri+"/greeting/profile", HttpMethod.GET, request, Object.class);
     }
 
 }

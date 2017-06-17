@@ -10,8 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-
-
-
 import com.saas.controller.Greeting;
-import com.saas.security.OAuthUser;
-
+import com.saas.security.KeycloakOAuthUser;
 
 
 @RestController
@@ -33,7 +27,7 @@ public class ApiRestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiRestController.class);
 
     @Autowired
-    OAuthUser oAuthUser;
+    KeycloakOAuthUser oAuthUser;
     
     private static final String template = "Hello, %s!";
 
@@ -56,8 +50,8 @@ public class ApiRestController {
     
     //In case if you want to see Profile of user then you this 
     @RequestMapping(value = "/greeting/profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OAuthUser user(Principal principal) {
-        oAuthUser.setOAuthUser(principal);
+    public KeycloakOAuthUser user(Principal principal) {
+        oAuthUser.setPrincipal(principal);
 
         //System.out.println("#### Inside user() - oAuthUser.toString() = " + oAuthUser.toString());
 

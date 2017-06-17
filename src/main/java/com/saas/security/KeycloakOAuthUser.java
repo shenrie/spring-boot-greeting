@@ -3,24 +3,26 @@ package com.saas.security;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Component
-public class OAuthUser implements Serializable {
+public class KeycloakOAuthUser implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String authority;
+	private Collection<GrantedAuthority> authority;
 	
 	@JsonIgnore
 	private String clientId;
@@ -42,7 +44,7 @@ public class OAuthUser implements Serializable {
 	@JsonIgnore
 	private Principal principal;
 	
-	public void setOAuthUser(Principal principal) {
+	public void setPrincipal(Principal principal) {
 	    this.principal = principal;
 	    init();
 	}
@@ -51,52 +53,41 @@ public class OAuthUser implements Serializable {
 	    return principal;
 	}
 
+	@SuppressWarnings({ "unused", "unchecked" })
 	private void init() {
 	    if (principal != null) {
-	        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-	        if (oAuth2Authentication != null) {
-	            for (GrantedAuthority ga : oAuth2Authentication.getAuthorities()) {
-	                setAuthority(ga.getAuthority());
-	            }
-	            setClientId(oAuth2Authentication.getOAuth2Request().getClientId());
-	            setGrantType(oAuth2Authentication.getOAuth2Request().getGrantType());
-	            setAuthenticated(oAuth2Authentication.getUserAuthentication().isAuthenticated());
+	    	KeycloakAuthenticationToken authToken = (KeycloakAuthenticationToken) principal;
+	    	KeycloakPrincipal kcPrincipal =  (KeycloakPrincipal) authToken.getPrincipal();
+	    	
+	        KeycloakSecurityContext ctxt = kcPrincipal.getKeycloakSecurityContext();
+	        AccessToken token = (AccessToken) ctxt.getToken();
+	        
+	        setAuthority(authToken.getAuthorities());
+	        
+            setClientId(token.getIssuedFor());
+	        //setGrantType(oAuth2Authentication.getOAuth2Request().getGrantType());
+	        setAuthenticated(authToken.isAuthenticated());
 	
-	            OAuth2AuthenticationDetails oAuth2AuthenticationDetails = (OAuth2AuthenticationDetails) oAuth2Authentication
-	                    .getDetails();
-	            if (oAuth2AuthenticationDetails != null) {
-	                setSessionId(oAuth2AuthenticationDetails.getSessionId());
-	                setTokenType(oAuth2AuthenticationDetails.getTokenType());
-	
-	            // This is what you will be looking for 
-	                setAccessToken(oAuth2AuthenticationDetails.getTokenValue());
-	            }
-	
-	    // This detail is more related to Logged-in User
-	            UsernamePasswordAuthenticationToken userAuthenticationToken = (UsernamePasswordAuthenticationToken) oAuth2Authentication.getUserAuthentication();
-	            if (userAuthenticationToken != null) {
-	                LinkedHashMap<String, Object> detailMap = (LinkedHashMap<String, Object>) userAuthenticationToken.getDetails();
-	                if (detailMap != null) {
-	                    for (Map.Entry<String, Object> mapEntry : detailMap.entrySet()) {
-	                        //System.out.println("#### detail Key = " + mapEntry.getKey());
-	                        //System.out.println("#### detail Value = " + mapEntry.getValue());
-	                        getUserDetail().put(mapEntry.getKey(), mapEntry.getValue());
-	                    }
-	
-	                }
-	
-	            }
-	
-	        }
-	
+            setTokenType(token.getType());
+            setAccessToken(ctxt.getTokenString());
+            setSessionId(token.getClientSession());
+	            
+	            
+            // This detail is more related to Logged-in User
+            getUserDetail().put("family Name",  token.getFamilyName());
+            getUserDetail().put("name",  token.getName());
+            getUserDetail().put("email",  token.getEmail());
+            getUserDetail().put("preferred_username",  token.getPreferredUsername());
+            getUserDetail().put("subject_id",  token.getSubject());
+ 	
 	    }
 	}
 	
-	public String getAuthority() {
+	public Collection<GrantedAuthority> getAuthority() {
 	    return authority;
 	}
 	
-	public void setAuthority(String authority) {
+	public void setAuthority(Collection<GrantedAuthority> authority) {
 	    this.authority = authority;
 	}
 	
