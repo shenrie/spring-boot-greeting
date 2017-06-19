@@ -36,8 +36,6 @@ public class ApiRestController {
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
     	
-       //System.out.println(String.format("Auth: %s %s", oAuthUser.getTokenType(), oAuthUser.getAccessToken()));
-        
         return new Greeting(counter.incrementAndGet(),
                             String.format(template, name));
     }
@@ -52,8 +50,6 @@ public class ApiRestController {
     @RequestMapping(value = "/greeting/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public KeycloakOAuthUser user(Principal principal) {
         oAuthUser.setPrincipal(principal);
-
-        //System.out.println("#### Inside user() - oAuthUser.toString() = " + oAuthUser.toString());
 
         return oAuthUser;
     }
