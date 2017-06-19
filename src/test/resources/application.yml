@@ -25,7 +25,7 @@ security:
     altName: test-fail
   oauth2:
     client:
-      clientId: apiman
+      clientId: spring-boot-demo
       clientSecret:
       userAuthorizationUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/auth
       accessTokenUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/token
