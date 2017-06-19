@@ -7,7 +7,7 @@ spring:
     name: oauth2-demo
 
 server:
-  port: 8081
+  port: 8080  # override on command line as needed with --server.port=808x
 
 #Logging
 logging:
@@ -22,7 +22,7 @@ security:
     password: test123
   oauth2:
     client:
-      clientId: apiman
+      clientId: spring-boot-demo
       clientSecret:
       userAuthorizationUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/auth
       accessTokenUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/token
