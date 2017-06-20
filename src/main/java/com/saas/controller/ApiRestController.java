@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +50,14 @@ public class ApiRestController {
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
     	
     	
-    	String usersName = SecurityContextHolder.getContext().getAuthentication().getName();
+    	KeycloakAuthenticationToken authToken = (KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    	KeycloakPrincipal kcPrincipal =  (KeycloakPrincipal) authToken.getPrincipal();
     	
+        KeycloakSecurityContext ctxt = kcPrincipal.getKeycloakSecurityContext();
+        AccessToken token = (AccessToken) ctxt.getToken();
+        
+        String usersName = token.getName();
+        
         return new Greeting(counter.incrementAndGet(),
                             String.format(template, usersName));
     }
