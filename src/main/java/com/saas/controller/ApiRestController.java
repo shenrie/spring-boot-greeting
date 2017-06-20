@@ -1,6 +1,7 @@
 
 package com.saas.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -11,11 +12,15 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import com.saas.controller.Greeting;
 import com.saas.security.KeycloakOAuthUser;
@@ -29,6 +34,10 @@ public class ApiRestController {
     @Autowired
     KeycloakOAuthUser oAuthUser;
     
+    @Value("${security.oauth2.client.logoutUri}")
+    private String logoutUri;
+
+    
     private static final String template = "Hello, %s!";
 
     private final AtomicLong counter = new AtomicLong();
@@ -36,8 +45,11 @@ public class ApiRestController {
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
     	
+    	
+    	String usersName = SecurityContextHolder.getContext().getAuthentication().getName();
+    	
         return new Greeting(counter.incrementAndGet(),
-                            String.format(template, name));
+                            String.format(template, usersName));
     }
     
     @RequestMapping("/greeting/help")
@@ -54,5 +66,19 @@ public class ApiRestController {
         return oAuthUser;
     }
 
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null){    
+			new SecurityContextLogoutHandler().logout(request, response, auth);
+		}
+		try {
+			response.sendRedirect(logoutUri);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
 
 }

@@ -20,7 +20,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
+				
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -52,8 +52,9 @@
  		   <artifactId>keycloak-tomcat8-adapter</artifactId>
  		   <version>3.1.0.Final</version>
 		</dependency>
+
 	</dependencies>
-	
+  
 	<build>
 		<plugins>
 			<plugin>

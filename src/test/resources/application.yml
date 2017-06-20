@@ -29,6 +29,7 @@ security:
       clientSecret:
       userAuthorizationUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/auth
       accessTokenUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/token
+      logoutUri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=http://localhost:8081/
     resource:
       user-info-uri: http://localhost:8080/auth/realms/demo/protocol/openid-connect/userinfo
 
